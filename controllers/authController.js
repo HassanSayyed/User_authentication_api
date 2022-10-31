@@ -9,7 +9,7 @@ const register = async (req, res) => {
   
     const emailAlreadyExists = await User.findOne({ email });
     if (emailAlreadyExists) {
-      return res.status(StatusCodes.CONFLICT).json({error: "User already exist"});
+      return res.status(StatusCodes.CONFLICT).json( "User already exist" );
     }
   
     // first registered user is an admin
@@ -29,10 +29,32 @@ const register = async (req, res) => {
     res.status(StatusCodes.CREATED).json({ ...tokenUser, token });
   };
 
+const login = async  (req ,res)=> {
+  const { email, password } = req.body;
+
+  const userExists = await User.findOne({ email });
+
+  console.log(userExists);
+
+  if ( !userExists) {
+    return res.status(StatusCodes.UNAUTHORIZED).json( "Account does not exist" );
+  }
+
+  const isPasswordCorrect = await userExists.comparePassword(password);
+
+  if (!isPasswordCorrect) {
+    return res.status(StatusCodes.UNAUTHORIZED).json( "incorrect password" );
+  }
+
+
+  const tokenUser = { name: userExists.name, userId: userExists._id, role: userExists.role };
+  const token = createJWT({payload : tokenUser});
+  res.status(StatusCodes.OK).json({ token });
+}
+
 
 
   module.exports = {
     register,
-    // login,
-    // logout,
+    login,
   };
