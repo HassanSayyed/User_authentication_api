@@ -29,6 +29,8 @@ app.get('/', (req, res) => res.send('Hello World!'))
 //  routers
 const authRouter = require('./routes/auth');
 app.use('/auth', authRouter);
+const userRouter = require('./routes/user');
+app.use('/user', userRouter);
 
 
 
