@@ -1,4 +1,7 @@
 const jwt = require('jsonwebtoken');
+const { StatusCodes, getReasonPhrase } = require('http-status-codes');
+
+
 
 const createJWT = ( {payload} ) => {
   const token = jwt.sign( payload, process.env.JWT_SECRET, {
@@ -7,16 +10,28 @@ const createJWT = ( {payload} ) => {
   return token;
 };
 
-const isTokenValid = ({ token }) => jwt.verify(token, process.env.JWT_SECRET);
+const isTokenValid = ({ token }) => jwt.verify(token, process.env.JWT_SECRET );
 
 
-const isAdminToken = ({token}) => {
-  console.log("3")
-  const decoded = jwt.verify(token, process.env.JWT_SECRET); 
-  console.log("4") 
-  var role = decoded.role ; 
-  console.log("5")
-  return role === "admin";
+const isAdminToken = (req, res, next) => {
+
+  const bearerHeader = req.headers['authorization'];
+
+  if (typeof bearerHeader !== 'undefined' ) {
+      const bearer = bearerHeader.split(' ');
+      const bearerToken = bearer[1];
+      
+      const decoded = jwt.verify(bearerToken, process.env.JWT_SECRET, {ignoreExpiration: true}); 
+
+      if (decoded){
+        var role = decoded.role ; 
+      
+        if (role === "admin") next();
+      } 
+  } 
+
+  return res.status(StatusCodes.FORBIDDEN).json(getReasonPhrase(StatusCodes.FORBIDDEN));
+  
 }
 
 

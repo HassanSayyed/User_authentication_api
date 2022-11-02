@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const Joi = require('joi')
 const validateRequest = require('../middleware/validate-request');
+const { isAdminToken } = require('../middleware/index')
 
 const { 
     check
@@ -9,7 +10,7 @@ const {
 
 } = require('../controllers/userController');
 
-router.get('/isToken', check)
+router.get('/isToken', isAdminToken ,check)
 
 
 
