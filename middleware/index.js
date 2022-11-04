@@ -1,9 +1,10 @@
-const { createJWT, isTokenValid, isAdminToken } = require('./jwt');
+const { createJWT, isTokenValid, isAdminToken, isUserToken } = require('./jwt');
 
 
 
 module.exports = {
   createJWT,
   isTokenValid,
-  isAdminToken
+  isAdminToken,
+  isUserToken
 };

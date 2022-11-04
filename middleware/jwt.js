@@ -26,7 +26,7 @@ const isAdminToken = (req, res, next) => {
       if (decoded){
         var role = decoded.role ; 
       
-        if (role === "admin") next();
+        if (role === "admin") return next();
       } 
   } 
 
@@ -34,9 +34,38 @@ const isAdminToken = (req, res, next) => {
   
 }
 
+const isUserToken = ( req, res, next) => {
+  
+  const bearerHeader = req.headers['authorization'];
+  const req_id = req.body['id'];
+
+  if (typeof bearerHeader !== 'undefined' ) {
+      const bearer = bearerHeader.split(' ');
+      const bearerToken = bearer[1];
+      
+      const decoded = jwt.verify(bearerToken, process.env.JWT_SECRET, {ignoreExpiration: true}); 
+
+      if (decoded){
+        var role = decoded.role ; 
+        var id = decoded.userId;
+        
+        console.log("role : "+role + " token id: "+id +"  req id "+req_id)
+      
+        if (role === "admin") { 
+          return next();
+        }else if (role === "user" && req_id === id) {
+          return next();
+        }
+      } 
+  } 
+
+  return res.status(StatusCodes.UNAUTHORIZED).json(getReasonPhrase(StatusCodes.UNAUTHORIZED));
+  
+}
 
 module.exports = {
   createJWT,
   isTokenValid,
-  isAdminToken
+  isAdminToken,
+  isUserToken
 };
