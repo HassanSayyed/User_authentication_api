@@ -14,7 +14,7 @@ function validateRequest(req,res, next, schema) {
     if (error) {
         res.status(StatusCodes.BAD_REQUEST).json(`Validation error: ${error.details.map(x => x.message).join(', ')}`)
     } else {
-        req.body = value;
+        //req.body = value;
         next();
     }
 

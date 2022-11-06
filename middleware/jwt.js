@@ -43,20 +43,23 @@ const isUserToken = ( req, res, next) => {
       const bearer = bearerHeader.split(' ');
       const bearerToken = bearer[1];
       
+     try {
       const decoded = jwt.verify(bearerToken, process.env.JWT_SECRET, {ignoreExpiration: true}); 
 
-      if (decoded){
-        var role = decoded.role ; 
-        var id = decoded.userId;
-        
-        console.log("role : "+role + " token id: "+id +"  req id "+req_id)
       
-        if (role === "admin") { 
-          return next();
-        }else if (role === "user" && req_id === id) {
-          return next();
-        }
-      } 
+      var role = decoded.role ; 
+      var id = decoded.userId;
+     
+      
+      if (role === "admin") { 
+        return next();
+      }else if (role === "user" && req_id === id) {
+        return next();
+      }
+     } catch (error) {
+      
+     }
+       
   } 
 
   return res.status(StatusCodes.UNAUTHORIZED).json(getReasonPhrase(StatusCodes.UNAUTHORIZED));
